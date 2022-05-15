@@ -14,8 +14,8 @@ import javafx.stage.Screen;
  */
 public class Enemy extends Sprite {
 
-    public Enemy(int x, int y, int w, int h, String type, Color color) {
-        super(x, y, w, h, type, color);
+    public Enemy(int x, int y, String type, Color color) {
+        super(x, y, type, color);
         AnimationTimer timer = new AnimationTimer() {
             @Override
             public void handle(long now) {
@@ -34,7 +34,6 @@ public class Enemy extends Sprite {
 
     private void update() {
         System.out.println(screenX + " " + screenY);
-
         //ENEMY AI
         if (this.getX() > 0 && goLeft) {
             this.moveLeft();
