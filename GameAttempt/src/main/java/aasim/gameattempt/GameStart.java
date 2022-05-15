@@ -22,25 +22,33 @@ public class GameStart extends Application {
 
     private double t = 0;
 
-    private Sprite player = new Sprite(300, 750, "player", Color.BLUE);
-    boolean upPressed, downPressed, leftPressed, rightPressed;
+    private Player player = new Player(300, 750, 40, 40, "player", Color.BLUE);
+    
 
     private Parent createContent() {
         root.setPrefSize(600, 800);
 
         root.getChildren().add(player);
-        Enemy e1 = new Enemy(100, 100, "enemy", Color.RED);
-        Enemy e2 = new Enemy(200, 100, "enemy", Color.RED);
-        Enemy e3 = new Enemy(300, 100, "enemy", Color.RED);
-        Enemy e4 = new Enemy(400, 100, "enemy", Color.RED);
-        Enemy e5 = new Enemy(500, 100, "enemy", Color.RED);
-        root.getChildren().addAll(e1, e2, e3, e4, e5);
+
         AnimationTimer timer = new AnimationTimer() {
             @Override
             public void handle(long now) {
                 update();
             }
         };
+
+        root.getChildren().add(new Enemy(500, 100, 25, 25, "1", Color.ALICEBLUE));
+        root.getChildren().add(new Enemy(400, 100, 25, 25, "2", Color.ANTIQUEWHITE));
+        root.getChildren().add(new Enemy(300, 100, 25, 25, "mook3", Color.AQUA));
+        root.getChildren().add(new Enemy(200, 100, 25, 25, "mook4", Color.AQUAMARINE));
+        root.getChildren().add(new Enemy(100, 100, 25, 25, "mook5", Color.AZURE));
+        root.getChildren().add(new Enemy(0, 100, 25, 25, "mook6", Color.BEIGE));
+        root.getChildren().add(new Enemy(50, 100, 25, 25, "mook7", Color.BISQUE));
+        root.getChildren().add(new Enemy(150, 100, 25, 25, "mook8", Color.BLANCHEDALMOND));
+        root.getChildren().add(new Enemy(250, 100, 25, 25, "mook9", Color.BLUE));
+        root.getChildren().add(new Enemy(350, 100, 25, 25, "mook10", Color.BLUEVIOLET));
+        root.getChildren().add(new Enemy(450, 100, 25, 25, "mook11", Color.BROWN));
+        root.getChildren().add(new Enemy(550, 100, 25, 25, "mook12", Color.BURLYWOOD));
 
         timer.start();
 
@@ -49,20 +57,7 @@ public class GameStart extends Application {
 
     private void update() {
         t += 0.016;
-        //Player Movement
-        if (upPressed) {
-            player.moveUp();
-        }
-        if (leftPressed) {
-            player.moveLeft();
-        }
-        if (rightPressed) {
-            player.moveRight();
-        }
-        if (downPressed) {
-            player.moveDown();
-        }
-        //
+
         if (t > 2) {
             t = 0;
         }
@@ -75,33 +70,12 @@ public class GameStart extends Application {
         scene.setOnKeyPressed(e -> {
             switch (e.getCode()) {
                 case A:
-                    leftPressed = true;
+                    player.moveLeft();
                     break;
                 case D:
-                    rightPressed = true;
+                    player.moveRight();
                     break;
-                case W:
-                    upPressed = true;
-                    break;
-                case S:
-                    downPressed = true;
-                    break;
-            }
-        });
-        scene.setOnKeyReleased(e -> {
-            switch (e.getCode()) {
-                case A:
-                    leftPressed = false;
-                    break;
-                case D:
-                    rightPressed = false;
-                    break;
-                case W:
-                    upPressed = false;
-                    break;
-                case S:
-                    downPressed = false;
-                    break;
+
             }
         });
 
