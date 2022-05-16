@@ -32,8 +32,10 @@ public class Enemy extends Sprite {
     double screenX = Screen.getPrimary().getBounds().getWidth();
     double screenY = Screen.getPrimary().getBounds().getHeight();
     double playerX, playerY; 
-    double C = Math.abs(this.getX()-playerX)/(Math.abs(this.getY()-playerY));//used to determine angle 
-    double angle = Math.sin(C);//angle that the player is from enemy
+    //double C = Math.abs(this.getX()-playerX)/(Math.abs(this.getY()-playerY));//used to determine angle 
+    double xDist = Math.abs(this.getX()-playerX);
+    double yDist = Math.abs(this.getY()-playerY);
+    //double angle = Math.sin(C);//angle that the player is from enemy
     private void update() {
         for (Sprite x : this.players) {
             playerX = x.getX();
@@ -83,7 +85,7 @@ public class Enemy extends Sprite {
         } 
         if(playerX < this.getX() ) {
       	  this.moveLeft();
-        }else 
+        }
         
       //System.out.println(playerX + ", " + playerY);
        
@@ -94,8 +96,28 @@ public class Enemy extends Sprite {
         for (Sprite x : collisions) {
             if (x != this) {
                 if (x.intersects(this.getBoundsInParent())) {
-                    goLeft = !goLeft;
-                    goUp = !goUp;
+                	if (yDist < 2) {
+                		while(yDist<2) {
+                			this.moveUp();
+                		}
+                	}
+                	//uncomment lower to get back to working
+                	/**
+                	if (playerX >this.getX()) {//will stop enemies and players from colliding, unless walked into for now
+                		this.moveLeft();
+                	}
+                	if (playerX < this.getX()) {
+                		this.moveRight();
+                		//this.setRotate(180);
+                	}
+                	if(playerY < this.getY()) {
+                		this.moveDown();
+                	}
+                	if(playerY > this.getY()) {
+                		this.moveUp();
+                	}
+                	**/
+                    
                 }
             }
         }
