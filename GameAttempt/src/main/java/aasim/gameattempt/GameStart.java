@@ -14,7 +14,15 @@ import javafx.scene.shape.Rectangle;
 import javafx.stage.Stage;
 
 import java.util.List;
+import java.util.Timer;
+import java.util.TimerTask;
 import java.util.stream.Collectors;
+import javafx.animation.PauseTransition;
+import javafx.scene.effect.DropShadow;
+import javafx.scene.effect.Effect;
+import javafx.scene.effect.Lighting;
+import javafx.scene.shape.Line;
+import javafx.util.Duration;
 
 public class GameStart extends Application {
 
@@ -22,13 +30,11 @@ public class GameStart extends Application {
 
     private double t = 0;
 
-    private Player player = new Player(300, 750, 40, 40, "player", Color.BLUE);
+    private Player player = new Player(300, 750);
     boolean upPressed, downPressed, leftPressed, rightPressed;
-    
 
     private Parent createContent() {
         root.setPrefSize(600, 800);
-
         root.getChildren().add(player);
 
         AnimationTimer timer = new AnimationTimer() {
@@ -38,11 +44,11 @@ public class GameStart extends Application {
             }
         };
 
-        Enemy e1 = new Enemy(100, 100, "enemy", Color.RED);
-        Enemy e2 = new Enemy(200, 100, "enemy", Color.RED);
-        Enemy e3 = new Enemy(300, 100, "enemy", Color.RED);
-        Enemy e4 = new Enemy(400, 100, "enemy", Color.RED);
-        Enemy e5 = new Enemy(500, 100, "enemy", Color.RED);
+        Enemy e1 = new Enemy(100, 100);
+        Enemy e2 = new Enemy(200, 100);
+        Enemy e3 = new Enemy(300, 100);
+        Enemy e4 = new Enemy(400, 100);
+        Enemy e5 = new Enemy(500, 100);
         root.getChildren().addAll(e1, e2, e3, e4, e5);
 
         timer.start();
@@ -52,7 +58,7 @@ public class GameStart extends Application {
 
     private void update() {
         t += 0.016;
-      //Player Movement
+        //Player Movement
         if (upPressed) {
             player.moveUp();
         }
@@ -65,7 +71,6 @@ public class GameStart extends Application {
         if (downPressed) {
             player.moveDown();
         }
-
         if (t > 2) {
             t = 0;
         }
@@ -74,7 +79,6 @@ public class GameStart extends Application {
     @Override
     public void start(Stage stage) throws Exception {
         Scene scene = new Scene(createContent());
-
         scene.setOnKeyPressed(e -> {
             switch (e.getCode()) {
                 case A:
@@ -89,6 +93,7 @@ public class GameStart extends Application {
                 case S:
                     downPressed = true;
                     break;
+               
             }
         });
         scene.setOnKeyReleased(e -> {
@@ -106,6 +111,18 @@ public class GameStart extends Application {
                     downPressed = false;
                     break;
             }
+        });
+        scene.setOnMouseMoved(e -> {
+            if (e.getX() < player.getX()) {
+                player.setImage(player.leftWalk);
+            } else {
+                player.setImage(player.rightWalk);
+            }
+
+        });
+
+        scene.setOnMouseClicked(e -> {
+            player.attack(e);
         });
 
         stage.setScene(scene);

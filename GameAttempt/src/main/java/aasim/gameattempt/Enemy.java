@@ -5,125 +5,191 @@
 package aasim.gameattempt;
 
 import javafx.animation.AnimationTimer;
+import javafx.animation.PauseTransition;
+import javafx.scene.layout.Pane;
 import javafx.scene.paint.Color;
 import javafx.stage.Screen;
-
+import javafx.util.Duration;
+import java.util.Random;
 /**
  *
  * @author 14048
  */
 public class Enemy extends Sprite {
 
-	 public Enemy(int x, int y, String type, Color color) {
-	        super(x, y, type, color);
+    public Enemy(int x, int y) {
+        super(x, y);
         AnimationTimer timer = new AnimationTimer() {
             @Override
             public void handle(long now) {
+                if (dead) {
+                    this.stop();
+                }
                 update();
             }
         };
 
         timer.start();
-        setSpeed(1);
+        setSpeed(Math.random());
     }
 
     boolean goLeft = true;
     boolean goUp = true;
     double screenX = Screen.getPrimary().getBounds().getWidth();
     double screenY = Screen.getPrimary().getBounds().getHeight();
-    double playerX, playerY; 
-    //double C = Math.abs(this.getX()-playerX)/(Math.abs(this.getY()-playerY));//used to determine angle 
-    double xDist = Math.abs(this.getX()-playerX);
-    double yDist = Math.abs(this.getY()-playerY);
+    double playerX, playerY;
+    double xDist = Math.abs(this.getX() - playerX);
+    double yDist = Math.abs(this.getY() - playerY);
+    Random rand = new Random();
+    
+
     //double angle = Math.sin(C);//angle that the player is from enemy
     private void update() {
+    	double xDist = Math.abs(this.getX() - playerX);
+        double yDist = Math.abs(this.getY() - playerY);
+        if (dead) {
+            if (!this.getImage().equals(deadAnimation)) {
+                this.setImage(deadAnimation);
+            }
+            PauseTransition hide = new PauseTransition(Duration.seconds(0.5));
+            hide.setOnFinished(eh -> {
+                this.setVisible(false);
+                ((Pane) this.getScene().getRoot()).getChildren().remove(this);
+                Sprite.collisions.remove(this);
+            });
+            hide.play();
+            return;
+        }
+
         for (Sprite x : this.players) {
             playerX = x.getX();
-            playerY = x.getY();  
-           
-            
-            
-           
-          }
+            playerY = x.getY();
+
+        }
         
+
         //ENEMY AI
-       /**
-        if (this.getX() > 0 && goLeft) {
-            this.moveLeft();
-        } else {
-            goLeft = false;
+        System.out.println(yDist);
+        if(xDist<300 && yDist<300) {
+        	aware();
         }
-
-        if (this.getX() < screenX - 25 && !goLeft) {
-            this.moveRight();
-        } else {
-            goLeft = true;
+        else {
+        	unaware();
         }
-
-        if (this.getY() > 0 && goUp) {
-            this.moveUp();
-        } else {
-            goUp = false;
-        }
-
-        if (this.getY() < screenY - 50 && !goUp) {
-            this.moveDown();
-        } else {
-            goUp = true;
-        }
+        	   /**
+		        if (playerY > this.getY()) {
+		            this.moveDown();
+		        }
+		        if (playerY < this.getY()) {
+		            this.moveUp();
+		        }
+		        if (playerX > this.getX()) {
+		            this.moveRight();
+		        }
+		        if (playerX < this.getX()) {
+		            this.moveLeft();
+		        }
         **/
         
-       
-        if(playerY > this.getY()) {
-      	  this.moveDown();
-        } 
-        if(playerY < this.getY() ) {
-      	  this.moveUp();
-        } 
-        if(playerX > this.getX() ) {
-      	  this.moveRight();
-        } 
-        if(playerX < this.getX() ) {
-      	  this.moveLeft();
+        
+       // Enemy POV (visibility)
+        
+        for (Sprite x : POV) {
+        	if(x != this) {
+        		 if (x.intersects(this.getBoundsInParent())) {
+                     double differenceX = x.getX() - this.getX();
+                     double differenceY = x.getY() - this.getY();
+                     if (differenceX > 10) {//will stop enemies and players from colliding, unless walked into for now
+                         while (x.intersects(this.getBoundsInParent())) {
+                        	 
+                        	 
+                         }
+                     }
+        	
         }
+        	}
+        }
+        	
         
-      //System.out.println(playerX + ", " + playerY);
        
         
-        
-
         // Collisions
+
         for (Sprite x : collisions) {
             if (x != this) {
                 if (x.intersects(this.getBoundsInParent())) {
-                	if (yDist < 2) {
-                		while(yDist<2) {
-                			this.moveUp();
-                		}
-                	}
-                	//uncomment lower to get back to working
-                	/**
-                	if (playerX >this.getX()) {//will stop enemies and players from colliding, unless walked into for now
-                		this.moveLeft();
-                	}
-                	if (playerX < this.getX()) {
-                		this.moveRight();
-                		//this.setRotate(180);
-                	}
-                	if(playerY < this.getY()) {
-                		this.moveDown();
-                	}
-                	if(playerY > this.getY()) {
-                		this.moveUp();
-                	}
-                	**/
-                    
+                    double differenceX = x.getX() - this.getX();
+                    double differenceY = x.getY() - this.getY();
+                    if (differenceX > 10) {//will stop enemies and players from colliding, unless walked into for now
+                        while (x.intersects(this.getBoundsInParent())) {
+                            this.moveLeft();
+                            x.moveRight();
+                        }
+                    }
+                    if (differenceX < -10) {
+                        while (x.intersects(this.getBoundsInParent())) {
+                            this.moveRight();
+                            x.moveLeft();
+                        }
+                    }
+                    if (differenceY > 5) {
+                        while (x.intersects(this.getBoundsInParent())) {
+                            this.moveUp();
+                            x.moveDown();
+                        }
+                    }
+                    if (differenceY < -5) {
+                        while (x.intersects(this.getBoundsInParent())) {
+                            this.moveDown();
+                            x.moveUp();
+                        }
+                    }
+
                 }
             }
         }
     }
-
-    public void setSpeed(int speed) {
+    //enemy unaware
+    public void unaware() {
+    	int unawareDirection = rand.nextInt(5);
+    	switch(unawareDirection) {
+    	case 1:
+    		this.moveLeft();
+    		unaware();
+    		break;
+    	case 2:
+    		this.moveRight();
+    		unaware();
+    		break;
+    	case 3:
+    		this.moveUp();
+    		unaware();
+    		break;
+    	case 4:
+    		this.moveDown();
+    		unaware();
+    		break;
+    	}
+    	
+    }
+    
+    //enemy aware
+    public void aware() {
+    	if (playerY > this.getY()) {
+            this.moveDown();
+        }
+        if (playerY < this.getY()) {
+            this.moveUp();
+        }
+        if (playerX > this.getX()) {
+            this.moveRight();
+        }
+        if (playerX < this.getX()) {
+            this.moveLeft();
+        }
+    }
+    
+    public void setSpeed(double speed) {
         this.speed = speed;
     }
 }
